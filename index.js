@@ -104,6 +104,7 @@ const cashWithdrawHandler = (accountType) => {
     });
 };
 const cashTransferHandler = (accountType) => {
+    console.clear();
     //transfer cash to another account and decrement account balance
     inquirer
         .prompt([
@@ -112,8 +113,20 @@ const cashTransferHandler = (accountType) => {
             type: "input",
             message: gradientConsole("Please enter receipent account number"),
             validate: (value) => {
-                if (isNaN(value)) {
-                    console.log(gradientConsole("\nHint:Please enter a 16 digit account number"));
+                if (isNaN(value) && value.length < 12) {
+                    console.log(gradientConsole("\nHint:Please enter a 12 digit account number"));
+                    return false;
+                }
+                return true;
+            },
+        },
+        {
+            name: "amount",
+            type: "input",
+            message: gradientConsole("Please enter amount to be send"),
+            validate: (value) => {
+                if (isNaN(value) && value.length < 12) {
+                    console.log(gradientConsole("\nHint:Please enter a 12 digit account number"));
                     return false;
                 }
                 return true;
@@ -121,7 +134,27 @@ const cashTransferHandler = (accountType) => {
         },
     ])
         .then((value) => {
-        console.log("Value:", value);
+        // console.log("Value:", value);
+        const accountNumber = value.accountNumber;
+        const amount = parseInt(value.amount);
+        const accountBal = accountType === "Current Account" ? currentAccBal : savingAccBal;
+        if (accountNumber.length < 12) {
+            console.log(gradientConsole("Invalid account number"));
+        }
+        else if (amount <= accountBal) {
+            console.log(gradientConsole(`PKR ${amount} successfully sent to Acc:${accountNumber}`));
+            console.log(gradientConsole(`Remaining Balance${accountType === "Current Account" ? "(C)" : "(S)"}:${accountBal - amount}`));
+            if (accountType === "Current Account") {
+                currentAccBal = accountBal - amount;
+            }
+            else {
+                savingAccBal = accountBal - amount;
+            }
+            performAnotherTransactionHandler();
+        }
+        else {
+            console.log(gradientConsole("Insufficient funds available"));
+        }
     })
         .catch((error) => {
         console.log("Error:", error);
