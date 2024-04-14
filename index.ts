@@ -33,10 +33,17 @@ const balanceInquiryHandler = (accountType: string) => {
   console.clear();
   //show user his selected account balance
   if (accountType === "Current Account") {
-    figletGradientConsole(`Your Current Balance is PKR ${currentAccBal}`);
+    // figletGradientConsole(`Your Current Balance is PKR ${currentAccBal}`);
+    console.log(
+      gradientConsole(`Your Current Balance is PKR ${currentAccBal}\n`)
+    );
   } else if (accountType === "Saving Account") {
-    figletGradientConsole(`Your Current Balance is PKR ${savingAccBal}`);
+    // figletGradientConsole(`Your Current Balance is PKR ${savingAccBal}`);
+    console.log(
+      gradientConsole(`Your Current Balance is PKR ${savingAccBal}\n`)
+    );
   }
+  performAnotherTransactionHandler();
 };
 
 const performAnotherTransactionHandler = () => {
@@ -50,7 +57,6 @@ const performAnotherTransactionHandler = () => {
       },
     ])
     .then((value) => {
-      console.log("Value:", value);
       const choice = value.transaction;
       if (gradientConsole("Yes") === choice) {
         selectAccountTypeHandler();
@@ -62,14 +68,6 @@ const performAnotherTransactionHandler = () => {
 };
 
 const cashChoices = [
-  // gradientConsole("1000"),
-  // gradientConsole("2000"),
-  // gradientConsole("3000"),
-  // gradientConsole("5000"),
-  // gradientConsole("10000"),
-  // gradientConsole("15000"),
-  // gradientConsole("20000"),
-  // gradientConsole("Other amount"),
   "1000",
   "2000",
   "3000",
@@ -82,6 +80,8 @@ const cashChoices = [
 
 const cashWithdrawHandler = (accountType: string) => {
   console.clear();
+  console.log("Account Type:", accountType);
+
   //show user multiples options to withdraw balance...also check current balance and decrement it
   inquirer
     .prompt([
@@ -99,8 +99,7 @@ const cashWithdrawHandler = (accountType: string) => {
       const accountBal =
         accountType === "Current Account" ? currentAccBal : savingAccBal;
 
-      if (amount < accountBal) {
-        // figletGradientConsole(`${amount} withdrawn successfully`);
+      if (amount <= accountBal) {
         console.log(gradientConsole(`${amount} withdrawn successfully`));
         console.log(
           gradientConsole(
@@ -126,6 +125,29 @@ const cashWithdrawHandler = (accountType: string) => {
 
 const cashTransferHandler = (accountType: string) => {
   //transfer cash to another account and decrement account balance
+  inquirer
+    .prompt([
+      {
+        name: "accountNumber",
+        type: "input",
+        message: gradientConsole("Please enter receipent account number"),
+        validate: (value) => {
+          if (isNaN(value)) {
+            console.log(
+              gradientConsole("\nHint:Please enter a 16 digit account number")
+            );
+            return false;
+          }
+          return true;
+        },
+      },
+    ])
+    .then((value) => {
+      console.log("Value:", value);
+    })
+    .catch((error) => {
+      console.log("Error:", error);
+    });
 };
 
 const selectAccountTypeHandler = () => {
@@ -161,9 +183,9 @@ const selectAccountTypeHandler = () => {
         if (action === gradient.pastel.multiline("Balance Inquiry")) {
           balanceInquiryHandler("Current Account");
         } else if (action === gradient.pastel.multiline("Cash Withdraw")) {
-          cashWithdrawHandler("Cash Withdraw");
+          cashWithdrawHandler("Current Account");
         } else if (action === gradient.pastel.multiline("Cash Transfer")) {
-          cashTransferHandler("Cash Transfer");
+          cashTransferHandler("Current Account");
         }
       } else if (
         selectedAccount === gradient.pastel.multiline("Saving Account")
@@ -171,9 +193,9 @@ const selectAccountTypeHandler = () => {
         if (action === gradient.pastel.multiline("Balance Inquiry")) {
           balanceInquiryHandler("Saving Account");
         } else if (action === gradient.pastel.multiline("Cash Withdraw")) {
-          cashWithdrawHandler("Cash Withdraw");
+          cashWithdrawHandler("Saving Account");
         } else if (action === gradient.pastel.multiline("Cash Transfer")) {
-          cashTransferHandler("Cash Transfer");
+          cashTransferHandler("Saving Account");
         }
       }
     })
