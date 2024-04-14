@@ -1,4 +1,5 @@
 #! /usr/bin/node env
+import figlet from "figlet";
 import gradient from "gradient-string";
 import inquirer from "inquirer";
 //PIN Code
@@ -13,13 +14,55 @@ const incrementPINCodeTriedHandler = () => {
 const tryAgainHandler = () => {
     transactionHandler();
 };
-const balanceInquiryHandler = () => {
+const gradientConsole = (message) => {
+    return gradient.pastel.multiline(message);
+};
+const figletGradientConsole = (message) => {
+    // const message = `Your Current Balance is PKR ${currentAccBal}`;
+    return figlet(message, (err, result) => {
+        console.log(gradient.pastel.multiline(result));
+    });
+};
+const balanceInquiryHandler = (accountType) => {
     //show user his selected account balance
+    if (accountType === "Current Account") {
+        figletGradientConsole(`Your Current Balance is PKR ${currentAccBal}`);
+    }
+    else if (accountType === "Saving Account") {
+        figletGradientConsole(`Your Current Balance is PKR ${savingAccBal}`);
+    }
 };
-const cashWithdrawHandler = () => {
+const cashWithdrawHandler = (accountType) => {
     //show user multiples options to withdraw balance...also check current balance and decrement it
+    inquirer
+        .prompt([
+        {
+            name: "withdrawBalance",
+            type: "list",
+            message: gradientConsole("Please select amount:"),
+            choices: [
+                gradientConsole("1000"),
+                gradientConsole("2000"),
+                gradientConsole("3000"),
+                gradientConsole("5000"),
+                gradientConsole("10000"),
+                gradientConsole("15000"),
+                gradientConsole("20000"),
+                gradientConsole("Other amount"),
+            ],
+        },
+    ])
+        .then((value) => {
+        const amount = value.withdrawBalance;
+        const accountBal = accountType === "Current Account" ? currentAccBal : savingAccBal;
+        if (amount < accountBal) {
+        }
+    })
+        .catch((error) => {
+        console.log("Error:", error);
+    });
 };
-const cashTransferHandler = () => {
+const cashTransferHandler = (accountType) => {
     //transfer cash to another account and decrement account balance
 };
 const selectAccountTypeHandler = () => {
@@ -28,33 +71,48 @@ const selectAccountTypeHandler = () => {
         {
             name: "accountType",
             type: "list",
-            message: gradient.pastel.multiline("Please select an account type:"),
+            message: gradientConsole("Please select an account type:"),
             choices: [
-                gradient.pastel.multiline("Current Account"),
-                gradient.pastel.multiline("Saving Account"),
+                gradientConsole("Current Account"),
+                gradientConsole("Saving Account"),
             ],
         },
         {
             name: "action",
             type: "list",
-            message: gradient.pastel.multiline("Please select an action to perform:"),
+            message: gradientConsole("Please select an action to perform:"),
             choices: [
-                gradient.pastel.multiline("Balance Inquiry"),
-                gradient.pastel.multiline("Cash Withdraw"),
-                gradient.pastel.multiline("Cash Transfer"),
+                gradientConsole("Balance Inquiry"),
+                gradientConsole("Cash Withdraw"),
+                gradientConsole("Cash Transfer"),
             ],
         },
     ])
         .then((value) => {
-        const selectedAccount = value.accountType.toString();
+        const selectedAccount = value.accountType;
         const action = value.action;
-        console.log("Selected Account:", selectedAccount);
-        console.log("Action:", action);
         if (selectedAccount === gradient.pastel.multiline("Current Account")) {
-            console.log("CALLED 11");
+            // console.log("CALLED 11");
+            if (action === gradient.pastel.multiline("Balance Inquiry")) {
+                balanceInquiryHandler("Current Account");
+            }
+            else if (action === gradient.pastel.multiline("Cash Withdraw")) {
+                cashWithdrawHandler("Cash Withdraw");
+            }
+            else if (action === gradient.pastel.multiline("Cash Transfer")) {
+                cashTransferHandler("Cash Transfer");
+            }
         }
         else if (selectedAccount === gradient.pastel.multiline("Saving Account")) {
-            console.log("CALLED 22");
+            if (action === gradient.pastel.multiline("Balance Inquiry")) {
+                balanceInquiryHandler("Saving Account");
+            }
+            else if (action === gradient.pastel.multiline("Cash Withdraw")) {
+                cashWithdrawHandler("Cash Withdraw");
+            }
+            else if (action === gradient.pastel.multiline("Cash Transfer")) {
+                cashTransferHandler("Cash Transfer");
+            }
         }
     })
         .catch((error) => {
@@ -68,11 +126,11 @@ const transactionHandler = () => {
             name: "pinCode",
             type: "input",
             message: pinCodeTried === 1
-                ? gradient.pastel.multiline("Enter 4 Digit PIN")
-                : gradient.pastel.multiline("Please enter valid PIN Code"),
+                ? gradientConsole("Enter 4 Digit PIN")
+                : gradientConsole("Please enter valid PIN Code"),
             validate: (value) => {
                 if (isNaN(value)) {
-                    console.log(gradient.pastel.multiline("\nHint:Please enter a 4 digit PIN Code"));
+                    console.log(gradientConsole("\nHint:Please enter a 4 digit PIN Code"));
                     return false;
                 }
                 return true;
@@ -89,7 +147,7 @@ const transactionHandler = () => {
             tryAgainHandler();
         }
         else if (pinCodeTried === totalAttempts) {
-            console.log(gradient.pastel.multiline("Your ATM Card is blocked, please contact at helpline"));
+            console.log(gradientConsole("Your ATM Card is blocked, please contact at helpline"));
         }
     })
         .catch((error) => {
