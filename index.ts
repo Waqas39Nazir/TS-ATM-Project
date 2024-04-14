@@ -1,4 +1,5 @@
-#! /usr/bin/node env
+#!/usr/bin/env node
+
 import figlet from "figlet";
 import gradient from "gradient-string";
 import inquirer from "inquirer";
