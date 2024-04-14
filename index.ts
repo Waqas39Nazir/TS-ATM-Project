@@ -1,5 +1,4 @@
 #! /usr/bin/node env
-import { error } from "console";
 import figlet from "figlet";
 import gradient from "gradient-string";
 import inquirer from "inquirer";
