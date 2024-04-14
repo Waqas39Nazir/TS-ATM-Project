@@ -1,13 +1,13 @@
 {
-  "name": "atm",
+  "name": "@waqas_nazir/atm-project",
   "version": "1.0.0",
   "description": "This is TS ATM project",
   "main": "index.js",
   "type": "module",
-  "bin": "./index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": "./index.js",
   "dependencies": {
     "figlet": "^1.7.0",
     "gradient-string": "^2.0.2",
